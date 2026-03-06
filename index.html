@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cafetín Central - UCV</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="bg-container">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div id="bg-decorations"></div>
+    </div>
+
+    <div class="main-container">
+        <div class="welcome-section">
+            <h1>Bienvenido al <br><span>Cafetín Central</span></h1>
+            <p>U.C.V. - FACULTAD DE CIENCIAS</p>
+        </div>
+
+        <div class="login-box">
+            <div class="croissant-badge">
+                <img src="images/croissant.jpg" alt="Croissants" class="croissant-img">
+            </div>
+
+            <h2>INICIAR SESIÓN</h2>
+           
+            <div class="input-group">
+                <input type="text" id="usuario" placeholder="Usuario">
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Contraseña">
+            </div>
+
+            <div class="input-group">
+                <select id="rol">
+                    <option value="">Seleccione su rol</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="cajero">Cajero</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <button class="btn-ingresar" onclick="validarLogin()">INGRESAR</button>
+            <p id="mensaje-error"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('bg-decorations');
+            
+            // Humo
+            for (let i = 0; i < 5; i++) {
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke-particle';
+                smoke.style.left = `${Math.random() * 30}%`;
+                smoke.style.animationDelay = `${Math.random() * 8}s`;
+                container.appendChild(smoke);
+            }
+
+            // Donitas
+            for (let i = 0; i < 6; i++) {
+                const donut = document.createElement('div');
+                donut.className = 'donut-shape';
+                donut.style.right = `${Math.random() * 20 + 5}%`;
+                donut.style.bottom = `${Math.random() * 20 + 5}%`;
+                donut.style.animationDelay = `${Math.random() * 10}s`;
+                container.appendChild(donut);
+            }
+        });
+    </script>
+</body>
+</html>

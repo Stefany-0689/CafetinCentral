@@ -1,0 +1,136 @@
+:root {
+    --crema: #FDF1E6;
+    --marron-oscuro: #5d4037;
+    --terracota: #D3755E;
+    --verde-oliva: #7A8D74;
+    --marron-medio: #8d6e63;
+    --blanco: #FFFFFF;
+    --salmon: #E9967A;
+    --fondo-soft: #FCF8F4;
+    --resaltado: #E8D5C4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Evita que aparezcan las barras de subir y bajar */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    background-color: var(--crema);
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Contenedor de fondo: Aquí vive el movimiento sin afectar el scroll */
+.bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    overflow: hidden; /* Recorta donas y humo que se salgan */
+}
+
+/* --- ANIMACIONES ACTIVAS --- */
+.blob {
+    position: absolute;
+    filter: blur(20px);
+    opacity: 0.5;
+    border-radius: 50%;
+    animation: moveBlobs 12s infinite alternate ease-in-out;
+}
+.b1 { width: 140px; height: 140px; background: var(--terracota); top: 10%; left: 15%; }
+.b2 { width: 170px; height: 170px; background: var(--verde-oliva); bottom: 10%; right: 15%; }
+.b3 { width: 90px; height: 90px; background: var(--salmon); top: 45%; left: 8%; }
+
+@keyframes moveBlobs {
+    from { transform: translate(0, 0); }
+    to { transform: translate(30px, 30px); }
+}
+
+.smoke-particle {
+    position: absolute; width: 80px; height: 80px; background: white;
+    filter: blur(20px); opacity: 0; border-radius: 50%;
+    animation: smokeRise 10s infinite linear;
+}
+
+@keyframes smokeRise {
+    0% { transform: translateY(110vh) scale(1); opacity: 0; }
+    20% { opacity: 0.3; }
+    100% { transform: translateY(-20vh) scale(3); opacity: 0; }
+}
+
+.donut-shape {
+    position: absolute; width: 40px; height: 40px;
+    border: 10px solid var(--resaltado); border-radius: 50%;
+    opacity: 0.3; animation: donutFloat 15s infinite ease-in-out;
+}
+
+@keyframes donutFloat {
+    50% { transform: translate(-20px, -30px) rotate(180deg); }
+}
+
+/* --- PANEL PRINCIPAL --- */
+.main-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 90%;
+    max-width: 380px;
+}
+
+.welcome-section { text-align: center; }
+.welcome-section h1 { font-family: 'Georgia', serif; font-size: 2.2rem; line-height: 1.1; }
+.welcome-section h1 span { color: var(--terracota); font-style: italic; }
+.welcome-section p { font-size: 0.85rem; font-weight: bold; color: var(--marron-medio); letter-spacing: 2px; }
+
+.login-box {
+    background: var(--blanco);
+    padding: 40px;
+    border-radius: 50px;
+    box-shadow: 0 15px 35px rgba(93, 64, 55, 0.1);
+    width: 100%;
+    border: 1px solid var(--resaltado);
+    position: relative;
+    animation: floating 6s infinite ease-in-out;
+}
+
+.croissant-badge {
+    position: absolute; top: -35px; right: -10px;
+    width: 90px; height: 90px; border-radius: 50%;
+    overflow: hidden; border: 5px solid white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1); transform: rotate(10deg);
+}
+.croissant-img { width: 100%; height: 100%; object-fit: cover; }
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+h2 { font-size: 0.85rem; letter-spacing: 3px; color: var(--marron-medio); margin-bottom: 25px; text-align: center; }
+
+input, select {
+    width: 100%; padding: 12px 20px; border-radius: 25px;
+    border: 1px solid #f2f2f2; background: var(--fondo-soft);
+    margin-bottom: 15px; outline: none; font-size: 1rem;
+}
+
+.btn-ingresar {
+    background: var(--marron-oscuro); color: white; border: none;
+    padding: 14px; width: 100%; border-radius: 25px;
+    font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.btn-ingresar:hover { background: var(--terracota); }
+
+#mensaje-error { color: var(--terracota); font-size: 0.8rem; margin-top: 10px; font-weight: bold; text-align: center; }

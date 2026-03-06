@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Cafetín Central</title>
+    <style>
+        /* PALETA DE COLORES */
+        :root {
+            --crema: #FDF1E6;
+            --marron-oscuro: #5d4037;
+            --terracota: #D3755E;
+            --verde-oliva: #7A8D74;
+            --marron-medio: #8d6e63;
+            --blanco: #FFFFFF;
+            --salmon: #E9967A;
+            --fondo-soft: #FCF8F4;
+            --resaltado: #E8D5C4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--crema);
+            color: var(--marron-oscuro);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            animation: fadeInPage 0.8s ease-in-out; 
+        }
+
+        /* --- CONFIGURACIÓN DE BANNERS DINÁMICOS --- */
+.banner-organico {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    border-radius: 30px;
+    margin: 40px 0 30px 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 50px; /* Espaciado interno */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 2px solid rgba(0,0,0,0.05);
+}
+
+/* Colores por categoría */
+.banner-cafeteria { background-color: var(--resaltado); }
+.banner-desayunos { background-color: #f1dfd1; } /* Un crema más cálido */
+.banner-almuerzos { background-color: #efebe9; } /* Un gris café suave */
+.banner-snacks { background-color: #f1dfd1; }    /* Un rosa/salmon muy suave */
+
+/* Alineación alternada */
+.banner-izq { align-items: flex-start; text-align: left; }
+.banner-der { align-items: flex-end; text-align: right; }
+
+/* Contenido y Subtítulos en Negrita */
+.banner-content { position: relative; z-index: 2; }
+.banner-content h2 { font-family: 'Georgia', serif; font-size: 2.2rem; color: var(--marron-oscuro); }
+.banner-content p { 
+    font-size: 1.4rem; 
+    color: var(--marron-oscuro); 
+    font-style: italic; 
+    font-weight: bold; /* SUBTÍTULOS EN NEGRITA */
+    margin-top: 5px;
+}
+
+/* CONTENEDOR DE NOTIFICACIONES */
+#notification-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5000; /* Por encima de todo */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Permite hacer clic a través del contenedor si está vacío */
+}
+
+.toast {
+    background: var(--marron-oscuro);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border-left: 5px solid var(--terracota);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto; /* Las notificaciones sí se pueden tocar */
+    
+    /* Nueva Animación: entra por la derecha, sale hacia abajo */
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+               fadeOutDown 0.4s ease-in 2.6s forwards;
+}
+
+/* --- NUEVAS ANIMACIONES PARA EL TOAST --- */
+@keyframes slideInRight {
+    from { transform: translateX(110%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOutDown {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(20px); opacity: 0; }
+}
+
+/* --- ANIMACIÓN DE MOVIMIENTO LEVE --- */
+@keyframes flotar {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(15px, -10px) rotate(2deg); }
+    66% { transform: translate(-10px, 15px) rotate(-1deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.blob {
+    position: absolute;
+    z-index: 1;
+    filter: blur(2px);
+    opacity: 0.5;
+    pointer-events: none;
+    width: 150px;
+    height: 150px;
+    /* La animación se repite infinitamente con un movimiento suave */
+    animation: flotar 8s ease-in-out infinite;
+}
+
+/* Diferentes tiempos y formas para cada mancha */
+.b1 { 
+    width: 220px; height: 220px; 
+    background-color: var(--terracota); 
+    top: -60px; right: -60px; 
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; 
+    animation-duration: 10s; /* Más lenta */
+}
+
+.b2 { 
+    width: 190px; height: 190px; 
+    background-color: var(--verde-oliva); 
+    bottom: -60px; left: 15%; 
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; 
+    animation-duration: 7s; /* Más rápida */
+    animation-delay: 1s;
+}
+
+.b3 { 
+    width: 140px; height: 140px; 
+    background-color: var(--marron-medio); 
+    top: 10px; left: -40px; 
+    border-radius: 50% 50% 20% 80% / 30% 80% 20% 70%; 
+    animation-duration: 12s;
+    animation-delay: 2s;
+}
+        .toast {
+            background: var(--marron-oscuro);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 15px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-left: 5px solid var(--terracota);
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* BURBUJA DE COMPRA EXITOSA */
+        .success-bubble {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--blanco);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 4000;
+            border: 3px solid var(--verde-oliva);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: none;
+        }
+
+        .success-bubble h2 { color: var(--verde-oliva); margin-bottom: 10px; }
+        .success-bubble p { color: var(--marron-medio); font-weight: bold; }
+
+        @keyframes popIn {
+            from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background-color: var(--blanco);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo { font-weight: bold; font-size: 1.4rem; color: var(--marron-oscuro); }
+        .logo span { color: var(--terracota); }
+        .nav-tools { display: flex; align-items: center; gap: 20px; }
+        .points-badge { background: var(--blanco); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--resaltado); font-size: 0.9rem; color: var(--terracota); font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; position: relative; }
+        #cart-count { position: absolute; top: -8px; right: -10px; background: var(--terracota); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; }
+.hero {
+    position: relative;
+    background-color: #fcf6f0; /* Fondo crema claro del centro */
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+/* Las ondas del fondo */
+.hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    background-color: var(--marron-oscuro);
+    border-radius: 43%;
+    z-index: 1;
+    animation: ondas 20s infinite linear;
+    opacity: 0.1; /* Muy sutil */
+}
+
+.hero::after {
+    background-color: var(--terracota);
+    border-radius: 40%;
+    top: -45%;
+    left: -20%;
+    animation-duration: 25s;
+    opacity: 0.08;
+}
+
+/* Decoraciones de bordes (Ondas fijas de las esquinas) */
+.hero-wave {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background-color: var(--marron-oscuro);
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    z-index: 0;
+}
+
+.w1 { top: -100px; left: -100px; transform: rotate(20deg); background-color: #6d4c41; }
+.w2 { bottom: -120px; right: -80px; transform: rotate(-15deg); background-color: var(--terracota); }
+.w3 { top: 10%; right: -150px; width: 400px; height: 400px; background-color: #d7ccc8; border-radius: 50%; opacity: 0.5; }
+
+/* Contenido del Texto */
+.hero-content {
+    position: relative;
+    z-index: 10;
+}
+
+.hero h1 { 
+    font-size: 3.5rem; 
+    font-family: 'Georgia', serif; 
+    color: var(--marron-oscuro); 
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.hero p { 
+    font-size: 1.3rem; 
+    color: var(--marron-medio); 
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Animación de las ondas de fondo */
+@keyframes ondas {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+        /* CATEGORÍAS */
+        .category-container { padding: 40px 5%; margin-top: -40px; }
+        .cloud-title { background-color: var(--terracota); color: white; display: inline-block; padding: 12px 35px; border-radius: 50px 50px 50px 5px; margin: 40px 0 10px; box-shadow: 4px 4px 0 var(--marron-medio); }
+        .cloud-title.verde { background-color: var(--verde-oliva); }
+        .subtitle { font-style: italic; color: var(--marron-medio); margin-bottom: 25px; display: block; font-weight: bold;}
+
+        /* GRID Y CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .card { background: var(--blanco); padding: 25px; border-radius: 25px; text-align: center; border: 2px solid transparent; border-bottom: 5px solid var(--salmon); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; }
+        .card:hover { transform: scale(1.08) translateY(-12px); background-color: var(--resaltado); border-color: var(--terracota); box-shadow: 0 20px 40px rgba(93, 64, 55, 0.3); z-index: 10; }
+        .product-image { width: 100%; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 10px; }
+        .card h3 { font-size: 1.1rem; margin-bottom: 10px; height: 45px; display: flex; align-items: center; justify-content: center; }
+        .price { color: var(--terracota); font-weight: bold; font-size: 1.4rem; display: block; margin-bottom: 15px; }
+        .btn-add { background-color: var(--verde-oliva); color: white; border: none; padding: 12px 20px; border-radius: 15px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; }
+        .card:hover .btn-add { background-color: var(--marron-oscuro); }
+
+        /* MODALES */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(93, 64, 55, 0.8); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal { background: var(--crema); width: 90%; max-width: 500px; padding: 30px; border-radius: 30px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
+        .cart-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--salmon); }
+        .btn-checkout { background: var(--terracota); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; margin-top: 20px; font-weight: bold; cursor: pointer; }
+        .history-card { background: var(--blanco); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--terracota); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <div id="success-bubble" class="success-bubble">
+        <div style="font-size: 3rem;">✅</div>
+        <h2>¡Pedido Realizado!</h2>
+        <p>Gracias por su compra</p>
+    </div>
+
+    <div id="notification-container"></div>
+
+    <header class="navbar">
+        <div class="logo"><span style="font-size: 1.8rem;">☕</span>Cafetín <span>Central</span></div>
+        <div class="nav-tools">
+            <div class="points-badge">✨ Tienes 150 puntos</div>
+            <button class="btn-icon" onclick="toggleModal('modal-historial')">📜</button>
+            <button class="btn-icon" onclick="toggleModal('modal-carrito')">
+                🛒 <span id="cart-count">0</span>
+            </button>
+            <button onclick="location.href='index.html'" style="border:none; background:none; cursor:pointer; color:var(--terracota); font-weight:bold;">Salir</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+    <div class="hero-wave w1"></div>
+    <div class="hero-wave w2"></div>
+    <div class="hero-wave w3"></div>
+
+    <div class="hero-content">
+        <span style="font-size: 2rem;">☕</span>
+        <h1>¡Hola! ¿Qué se te<br>antoja hoy?</h1>
+        <p>Recarga tu día, un sorbo y a volar.</p>
+    </div>
+</section>
+
+       <section class="category-container">
+    
+    <div class="banner-organico">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="banner-content">
+            <h2>☕Cafetería y Bebidas</h2>
+            <p>Tu pausa necesaria empieza aquí</p>
+        </div>
+    </div>
+    <div class="grid" id="grid-cafeteria"></div>
+
+    <div class="banner-organico banner-desayunos banner-derecha">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="banner-content">
+            <h2>🥪Desayunos y Entradas</h2>
+            <p>Empieza tu día con energía</p>
+        </div>
+    </div>
+    <div class="grid" id="grid-desayunos"></div>
+
+    <div class="banner-organico banner-almuerzos">
+        <div class="blob b1" style="background-color: var(--marron-oscuro); opacity: 0.3;"></div>
+        <div class="blob b3"></div>
+        <div class="banner-content">
+            <h2>🍔Almuerzos y Platos Fuertes</h2>
+            <p>Date el gusto que te mereces</p>
+        </div>
+    </div>
+    <div class="grid" id="grid-almuerzos"></div>
+
+    <div class="banner-organico banner-snacks banner-derecha">
+        <div class="blob b2"></div>
+        <div class="blob b3" style="background-color: var(--salmon);"></div>
+        <div class="banner-content">
+            <h2>🍦Snacks y Dulces</h2>
+            <p>Un dulce al día mantiene la amargura alejada</p>
+        </div>
+    </div>
+    <div class="grid" id="grid-snacks"></div>
+
+</section>
+</section>
+
+    <div id="modal-carrito" class="overlay">
+        <div class="modal">
+            <span class="close-modal" onclick="toggleModal('modal-carrito')">&times;</span>
+            <h2 style="margin-bottom:20px; color:var(--terracota)">Tu Carrito</h2>
+            <div id="cart-items-container"></div>
+            <div style="margin-top:20px; border-top:2px solid var(--marron-medio); padding-top:10px">
+                <h3>Total: $<span id="cart-total">0.00</span></h3>
+            </div>
+            <button class="btn-checkout" onclick="finalizarCompra()">PEDIR Y PAGAR</button>
+        </div>
+    </div>
+
+    <div id="modal-historial" class="overlay">
+        <div class="modal">
+            <span class="close-modal" onclick="toggleModal('modal-historial')">&times;</span>
+            <h2 style="margin-bottom:20px; color:var(--verde-oliva)">Historial de Compras</h2>
+            <div id="history-container">
+                <p style="font-size:0.9rem; color:var(--marron-medio)">No hay compras recientes.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de productos (igual que antes)
+        const productos = [
+            { id: 1, cat: 'cafeteria', nombre: "Café (Americano/Leche)", precio: 2.50, img: "images/cafe americano-leche.jpg" },
+            { id: 2, cat: 'cafeteria', nombre: "Chocolate Caliente", precio: 2.50, img: "images/chocolate caliente.jpg" },
+            { id: 3, cat: 'cafeteria', nombre: "Jugo Natural", precio: 3.50, img: "images/jugo natural.jpg" },
+            { id: 4, cat: 'cafeteria', nombre: "Refresco (Lata)", precio: 2.00, img: "images/refrescos.jpg" },
+            { id: 5, cat: 'cafeteria', nombre: "Agua Mineral", precio: 1.50, img: "images/agua mineral.jpg" },
+            { id: 6, cat: 'desayunos', nombre: "Empanadas", precio: 2.00, img: "images/empanadas.jpg" },
+            { id: 7, cat: 'desayunos', nombre: "Tequeños (5 unidades)", precio: 4.00, img: "images/tequeños.jpg" },
+            { id: 8, cat: 'desayunos', nombre: "Sandwich Clásico", precio: 4.50, img: "images/sandwich clasico.jpg" },
+            { id: 9, cat: 'desayunos', nombre: "Sandwich Especial", precio: 6.00, img: "images/sandwich especial.jpg" },
+            { id: 10, cat: 'almuerzos', nombre: "Hamburguesa Clásica", precio: 6.00, img: "images/hamburguesa clasica.jpg" },
+            { id: 11, cat: 'almuerzos', nombre: "Perro Gourmet", precio: 5.50, img: "images/perro gourmet.jpg" },
+            { id: 12, cat: 'almuerzos', nombre: "Perro Normal", precio: 3.00, img: "images/perro normal.jpg" },
+            { id: 13, cat: 'almuerzos', nombre: "Salchipapas", precio: 4.00, img: "images/salchipapas.jpg" },
+            { id: 14, cat: 'snacks', nombre: "Helado (Cono/Vaso)", precio: 3.50, img: "images/helado.jpg" },
+            { id: 15, cat: 'snacks', nombre: "Galletas Chips Ahoy", precio: 2.50, img: "images/chips-ahoy.jpg" },
+            { id: 16, cat: 'snacks', nombre: "Chicles / Caramelos", precio: 1.00, img: "images/chicles-caramelos.jpg" },
+            { id: 17, cat: 'snacks', nombre: "Chocolate CriCri", precio: 2.50, img: "images/chocolate cricri.jpg" },
+            { id: 18, cat: 'snacks', nombre: "Cocosette", precio: 2.00, img: "images/cocosette.jpg" }
+        ];
+
+        let carrito = [];
+
+
+        function renderProductos() {
+            productos.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const imgHTML = p.img ? `<img src="${p.img}" class="product-image" alt="${p.nombre}">` : '';
+                card.innerHTML = `${imgHTML}<h3>${p.nombre}</h3><span class="price">$${p.precio.toFixed(2)}</span><button class="btn-add" onclick="agregarCarrito(${p.id})">Agregar</button>`;
+                document.getElementById(`grid-${p.cat}`).appendChild(card);
+            });
+        }
+
+        function mostrarNotificacion(nombre) {
+    const container = document.getElementById('notification-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `🛒 <strong>${nombre}</strong> añadido`;
+    container.appendChild(toast);
+    
+    // Eliminamos el elemento después de que termine la animación (3 segundos)
+    setTimeout(() => { 
+        toast.remove(); 
+    }, 3000);
+}
+
+        function agregarCarrito(id) {
+            const p = productos.find(prod => prod.id === id);
+            carrito.push(p);
+            mostrarNotificacion(p.nombre);
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            document.getElementById('cart-count').innerText = carrito.length;
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+            let total = 0;
+            carrito.forEach((item, index) => {
+                total += item.precio;
+                container.innerHTML += `<div class="cart-item"><span>${item.nombre}</span><span>$${item.precio.toFixed(2)} <button onclick="quitar(${index})" style="color:red; border:none; background:none; cursor:pointer; margin-left:10px">✕</button></span></div>`;
+            });
+            document.getElementById('cart-total').innerText = total.toFixed(2);
+        }
+
+        function quitar(index) {
+            carrito.splice(index, 1);
+            actualizarUI();
+        }
+
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function finalizarCompra() {
+            if(carrito.length === 0) return alert("El carrito está vacío");
+            const ahora = new Date();
+            const fecha = ahora.toLocaleDateString();
+            const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const total = document.getElementById('cart-total').innerText;
+            const listaProductos = carrito.map(item => `• ${item.nombre}`).join("<br>");
+            const ticketHTML = `<div class="history-card"><p style="font-size:0.8rem; color:var(--marron-medio); margin-bottom:5px;">📅 ${fecha} - ⏰ ${hora}</p><p style="margin-bottom:5px;"><strong>Pedido:</strong><br>${listaProductos}</p><p style="color:var(--terracota); font-weight:bold;">Total: $${total}</p></div>`;
+            const historyContainer = document.getElementById('history-container');
+            if (historyContainer.innerHTML.includes("No hay compras")) historyContainer.innerHTML = "";
+            historyContainer.innerHTML = ticketHTML + historyContainer.innerHTML;
+            toggleModal('modal-carrito');
+            const bubble = document.getElementById('success-bubble');
+            bubble.style.display = 'block';
+            carrito = [];
+            actualizarUI();
+            setTimeout(() => {
+                bubble.style.animation = 'fadeOut 0.4s forwards';
+                setTimeout(() => { bubble.style.display = 'none'; bubble.style.animation = 'popIn 0.5s forwards'; }, 500);
+            }, 3000);
+        }
+
+        window.onload = renderProductos;
+        const tituloHero = document.querySelector('.hero h1');
+const hora = new Date().getHours();
+let saludo = "¡Hola!";
+
+if (hora < 12) saludo = "¡Buenos días!";
+else if (hora < 18) saludo = "¡Buenas tardes!";
+else saludo = "¡Buenas noches!";
+
+tituloHero.innerHTML = `${saludo} ¿Qué se te<br>antoja hoy?`;
+    </script>
+</body>
+</html>

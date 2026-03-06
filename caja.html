@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja | Cafetín Central</title>
+    <style>
+        :root {
+            --crema: #FDF1E6;
+            --marron-oscuro: #5d4037;
+            --terracota: #D3755E;
+            --verde-oliva: #7A8D74;
+            --marron-medio: #8d6e63;
+            --blanco: #FFFFFF;
+            --salmon: #E9967A;
+            --fondo-soft: #FCF8F4;
+            --resaltado: #E8D5C4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--fondo-soft);
+            color: var(--marron-oscuro);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* HEADER */
+        .header-caja {
+            background-color: var(--blanco);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+
+        .user-info { display: flex; align-items: center; gap: 12px; font-weight: bold; }
+        .badge-cajero { background: var(--verde-oliva); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; }
+
+        /* FILTROS */
+        .filter-bar { 
+            background: var(--resaltado); 
+            padding: 12px 25px; 
+            display: flex; 
+            gap: 12px; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .filter-btn { 
+            padding: 8px 18px; border-radius: 20px; border: none; background: var(--blanco); 
+            cursor: pointer; font-size: 0.85rem; font-weight: bold; color: var(--marron-medio);
+            transition: 0.3s;
+        }
+        .filter-btn.active { background: var(--terracota); color: white; box-shadow: 0 4px 10px rgba(211, 117, 94, 0.3); }
+
+        /* CONTENEDOR PRINCIPAL */
+        .main-container { 
+            display: grid; 
+            grid-template-columns: 1fr 380px; 
+            flex: 1; 
+            overflow: hidden; 
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* SECCIÓN IZQUIERDA: PRODUCTOS */
+        .products-section {
+            background: var(--blanco);
+            border-radius: 25px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+        }
+
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 15px; 
+        }
+
+        .product-item {
+            background: var(--crema);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+        }
+
+        .product-item:hover { 
+            transform: scale(1.03); 
+            background: var(--resaltado); 
+            border-color: var(--terracota); 
+        }
+
+        .product-item img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 12px; border-radius: 18px; background-color: white;}
+        .product-item h4 { font-size: 0.9rem; margin-bottom: 5px; color: var(--marron-oscuro); height: 40px; overflow: hidden; }
+        .product-item p { color: var(--terracota); font-weight: bold; font-size: 1rem; }
+
+        /* SECCIÓN DERECHA: TICKET (SOLUCIÓN AL SCROLL) */
+        .checkout-panel {
+            background: var(--marron-oscuro);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(93, 64, 55, 0.3);
+            /* Fijamos el alto para que el botón no se vaya al infinito */
+            max-height: 100%; 
+            overflow: hidden;
+        }
+
+        .ticket-title { 
+            text-align: center; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .order-list { 
+            flex: 1; 
+            overflow-y: auto; /* Aquí es donde ocurre el scroll */
+            padding-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        /* Scrollbar elegante */
+        .order-list::-webkit-scrollbar { width: 6px; }
+        .order-list::-webkit-scrollbar-thumb { background: var(--terracota); border-radius: 10px; }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .remove-btn { color: var(--salmon); cursor: pointer; border: none; background: none; font-weight: bold; font-size: 1.1rem; margin-left: 10px; }
+
+        .totals {
+            padding-top: 15px;
+            border-top: 2px dashed rgba(255,255,255,0.2);
+            flex-shrink: 0; /* Evita que esta sección se encoja */
+        }
+
+        .total-row { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: bold; color: var(--crema); }
+
+        .btn-pay {
+            background: var(--terracota);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(211, 117, 94, 0.3);
+        }
+
+        .btn-pay:hover { background: var(--salmon); transform: translateY(-2px); }
+
+        /* MODALES */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .receipt-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            color: var(--marron-oscuro);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .receipt-icon { font-size: 4rem; margin-bottom: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <header class="header-caja">
+        <div class="user-info">
+            <span style="font-size: 1.5rem;">☕</span> 
+            <span style="font-size: 'Georgia', serif; font-size: 1.2rem;">Cafetín Central | <span style="color:var(--terracota)">Control de Caja</span></span>
+        </div>
+        <div class="user-info">
+            <span class="badge-cajero">Cajero</span>
+            <button onclick="location.href='index.html'" style="border:none; background:none; color:var(--terracota); cursor:pointer; font-weight:bold;">Cerrar Turno</button>
+        </div>
+    </header>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filtrar('todos', event)">Todos</button>
+        <button class="filter-btn" onclick="filtrar('cafeteria', event)">Cafetería</button>
+        <button class="filter-btn" onclick="filtrar('desayunos', event)">Desayunos</button>
+        <button class="filter-btn" onclick="filtrar('almuerzos', event)">Almuerzos</button>
+        <button class="filter-btn" onclick="filtrar('snacks', event)">Snacks</button>
+    </div>
+
+    <div class="main-container">
+        <section class="products-section">
+            <div class="products-grid" id="grid-productos"></div>
+        </section>
+
+        <aside class="checkout-panel">
+            <div class="ticket-title">
+                <h3>Pedido Actual</h3>
+                <small id="fecha-actual" style="opacity: 0.7;"></small>
+            </div>
+
+            <div class="order-list" id="lista-pedido">
+                </div>
+
+            <div class="totals">
+                <div class="total-row">
+                    <span>TOTAL</span>
+                    <span id="txt-total">$0.00</span>
+                </div>
+                <button class="btn-pay" onclick="emitirRecibo()">EMITIR RECIBO</button>
+            </div>
+        </aside>
+    </div>
+
+    <div id="receipt-overlay" class="modal-overlay">
+        <div class="receipt-modal">
+            <div class="receipt-icon">🧾✅</div>
+            <h2 style="color:var(--verde-oliva)">Venta Exitosa</h2>
+            <p style="margin: 15px 0; font-size: 1.1rem; line-height: 1.5;">Recibo Emitido<br><strong>¡Gracias por su compra!</strong></p>
+            <button class="btn-pay" onclick="cerrarVenta()">NUEVA VENTA</button>
+        </div>
+    </div>
+
+    <script>
+        const productos = [
+            { id: 1, cat: 'cafeteria', nombre: "Café (Americano/Leche)", precio: 2.50, img: "images/cafe americano-leche.jpg" },
+            { id: 2, cat: 'cafeteria', nombre: "Chocolate Caliente", precio: 2.50,img: "images/chocolate caliente.jpg" },
+            { id: 3, cat: 'cafeteria', nombre: "Jugo Natural", precio: 3.50, img: "images/jugo natural.jpg" },
+            { id: 4, cat: 'cafeteria', nombre: "Refresco (Lata)", precio: 2.00, img: "images/refrescos.jpg"},
+            { id: 5, cat: 'cafeteria', nombre: "Agua Mineral", precio: 1.50, img: "images/agua mineral.jpg" },
+            { id: 6, cat: 'desayunos', nombre: "Empanadas", precio: 2.00, img: "images/empanadas.jpg" },
+            { id: 7, cat: 'desayunos', nombre: "Tequeños (5 unidades)", precio: 4.00, img: "images/tequeños.jpg"},
+            { id: 8, cat: 'desayunos', nombre: "Sandwich Clásico", precio: 4.50, img: "images/sandwich clasico.jpg" },
+            { id: 9, cat: 'desayunos', nombre: "Sandwich Especial", precio: 6.00, img: "images/sandwich especial.jpg"},
+            { id: 10, cat: 'almuerzos', nombre: "Hamburguesa Clásica", precio: 6.00, img: "images/hamburguesa clasica.jpg" },
+            { id: 11, cat: 'almuerzos', nombre: "Perro Gourmet", precio: 5.50, img: "images/perro gourmet.jpg" },
+            { id: 12, cat: 'almuerzos', nombre: "Perro Normal", precio: 3.00, img: "images/perro normal.jpg" },
+            { id: 13, cat: 'almuerzos', nombre: "Salchipapas", precio: 4.00, img: "images/salchipapas.jpg" },
+            { id: 14, cat: 'snacks', nombre: "Helado (Copa/Vaso)", precio: 3.50, img: "images/helado.jpg" },
+            { id: 15, cat: 'snacks', nombre: "Galletas Chips Ahoy", precio: 2.50, img: "images/chips-ahoy.jpg" },
+            { id: 16, cat: 'snacks', nombre: "Chicles / Caramelos", precio: 1.00, img: "images/chicles-caramelos.jpg" },
+            { id: 17, cat: 'snacks', nombre: "Chocolate CriCri", precio: 2.50, img: "images/chocolate cricri.jpg" },
+            { id: 18, cat: 'snacks', nombre: "Cocosette", precio: 2.00, img: "images/cocosette.jpg" }
+        ];
+
+        let pedidoActual = [];
+
+        function renderizarProductos(lista = productos) {
+            const grid = document.getElementById('grid-productos');
+            grid.innerHTML = '';
+            lista.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                div.onclick = () => agregarAlPedido(p.id);
+                div.innerHTML = `
+                    <img src="${p.img}" alt="${p.nombre}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/706/706164.png'">
+                    <h4>${p.nombre}</h4>
+                    <p>$${p.precio.toFixed(2)}</p>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function agregarAlPedido(id) {
+            const p = productos.find(item => item.id === id);
+            pedidoActual.push({...p, uniqueId: Date.now() + Math.random()});
+            actualizarTicket();
+        }
+
+        function quitarDelPedido(uniqueId) {
+            pedidoActual = pedidoActual.filter(item => item.uniqueId !== uniqueId);
+            actualizarTicket();
+        }
+
+        function actualizarTicket() {
+            const container = document.getElementById('lista-pedido');
+            const totalLabel = document.getElementById('txt-total');
+            container.innerHTML = '';
+            let total = 0;
+
+            pedidoActual.forEach((p) => {
+                total += p.precio;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <span>${p.nombre}</span>
+                    <div>
+                        <span>$${p.precio.toFixed(2)}</span>
+                        <button class="remove-btn" onclick="quitarDelPedido(${p.uniqueId})">✕</button>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+            
+            totalLabel.innerText = `$${total.toFixed(2)}`;
+            // Scroll automático al último producto agregado
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function filtrar(categoria, event) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(categoria === 'todos') {
+                renderizarProductos(productos);
+            } else {
+                const filtrados = productos.filter(p => p.cat === categoria);
+                renderizarProductos(filtrados);
+            }
+        }
+
+        function emitirRecibo() {
+            if(pedidoActual.length === 0) return alert("Error: No hay productos seleccionados.");
+            document.getElementById('receipt-overlay').style.display = 'flex';
+        }
+
+        function cerrarVenta() {
+            pedidoActual = [];
+            actualizarTicket();
+            document.getElementById('receipt-overlay').style.display = 'none';
+        }
+
+        // Inicialización
+        window.onload = () => {
+            document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
+            renderizarProductos();
+        };
+    </script>
+</body>
+</html>

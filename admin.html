@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Cafetín Central</title>
+    
+    <style>
+        :root {
+            --crema: #FDF1E6;
+            --marron-oscuro: #5d4037;
+            --terracota: #D3755E;
+            --verde-oliva: #7A8D74;
+            --marron-medio: #8d6e63;
+            --blanco: #FFFFFF;
+            --salmon: #E9967A;
+            --fondo-soft: #FCF8F4;
+            --resaltado: #E8D5C4;
+        }
+
+        body {
+            background-color: var(--crema);
+            color: var(--marron-oscuro);
+            font-family: 'Tahoma', sans-serif;
+            margin: 0;
+            padding: 20px;
+            animation: fadeInPage 0.8s ease-in-out;
+        }
+
+        /* Fondo oscurecido */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+/* La burbuja blanca */
+.modal-bubble {
+    background: var(--blanco);
+    padding: 30px;
+    border-radius: 30px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    animation: bubbleUp 0.3s ease-out;
+}
+
+@keyframes bubbleUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+.modal-bubble p {
+    font-family: 'Tahoma', sans-serif;
+    color: var(--marron-oscuro);
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Tahoma', sans-serif;
+    transition: 0.2s;
+}
+
+.modal-btn.cancel { background: var(--resaltado); color: var(--marron-oscuro); }
+.modal-btn.confirm { background: #ff5252; color: white; }
+
+.modal-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .admin-nav {
+            background: var(--blanco);
+            padding: 20px 40px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        /* TIPOGRAFÍA ACTUALIZADA PARA "Gestión Cafetín Central" */
+        .admin-nav h1 { 
+            font-family: 'Tahoma', sans-serif; 
+            font-weight: 700;
+            margin: 0; 
+            font-size: 1.8rem; 
+            letter-spacing: -1px; /* Hace que se vea más compacto como en la foto */
+        }
+        .admin-nav h1 span { color: var(--terracota); }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .add-box {
+            background: var(--marron-oscuro);
+            color: var(--crema);
+            padding: 30px;
+            border-radius: 30px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+            box-shadow: 0 15px 35px rgba(93, 64, 55, 0.2);
+        }
+
+        .add-box h2 { 
+            grid-column: 1 / -1; 
+            margin: 0 0 10px 0; 
+            font-family: 'Tahomat', sans-serif; 
+            font-weight: 700;
+            font-size: 1.6rem; 
+        }
+
+        .field { display: flex; flex-direction: column; gap: 8px; }
+        .field label { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+        input, select {
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Tahoma', sans-serif;
+        }
+
+        input:focus { border-color: var(--terracota); }
+
+        .btn-save {
+            background: var(--terracota);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            grid-column: 1 / -1; 
+            justify-self: end;  
+            margin-top: 10px;
+            font-family: 'Tahoma', sans-serif;
+        }
+        .btn-save:hover { background: var(--salmon); transform: translateY(-3px); }
+        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .item-card {background: var(--blanco);border-radius: 25px;padding: 20px;display: flex;gap: 15px;align-items: center;border-bottom: 5px solid var(--terracota);transition: 0.3s;box-shadow: 0 5px 15px rgba(0,0,0,0.02);position: relative;height: 140px;overflow: hidden;}
+        .item-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .preview-img { width: 85px; height: 85px; object-fit: cover; border-radius: 18px; background: var(--resaltado); border: 2px solid var(--crema); }
+        .item-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center;max-width: 180px; } 
+        .item-info h3 { margin: 0 0 5px 0; font-size: 1.05rem; line-height: 1.2; white-space: nowrap;overflow: hidden;text-overflow: ellipsis; }
+        .cat-badge { font-size: 0.7rem; background: var(--fondo-soft); color: var(--marron-medio); padding: 3px 8px; border-radius: 8px; }
+        .price-group { margin: 10px 0; display: flex; align-items: center; gap: 5px; }
+        .dollar-sign { font-weight: bold; font-size: 1.2rem; color: var(--marron-oscuro); }
+        .price-input { width: 80px; color: var(--terracota); font-weight: bold; font-size: 1.1rem; background: var(--fondo-soft); border: 1px solid var(--resaltado); border-radius: 8px; padding: 4px; }
+        .stock-control { display: flex; align-items: center; gap: 10px; background: var(--crema); padding: 8px 12px; border-radius: 12px; width: fit-content; }
+        .btn-stock { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--marron-oscuro); color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .btn-del { background: #fff0f0; border: none; color: #ff5252; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; position: absolute; right: 15px; top: 50%; transform: translateY(-50%);}
+        .btn-del:hover { background: #ff5252; color: white; }
+
+        @media (max-width: 600px) {
+            .add-box { grid-template-columns: 1fr; }
+            .item-card { flex-direction: column; text-align: center; }
+            .stock-control { margin: 10px auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="confirm-modal" class="modal-overlay">
+    <div class="modal-bubble">
+        <div class="modal-icon">⚠️</div>
+        <p id="modal-text">¿Estás seguro de eliminar este producto?</p>
+        <div class="modal-buttons">
+            <button id="btn-cancel" class="modal-btn cancel">Cancelar</button>
+            <button id="btn-confirm" class="modal-btn confirm">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        <header class="admin-nav">
+            <h1>Gestión <span>Cafetín Central</span> 🛠️</h1>
+            <button onclick="window.history.back()" style="cursor:pointer; border:none; background:var(--terracota); color:white; padding:10px 20px; border-radius:15px; font-weight:bold; font-family:'Montserrat',sans-serif;">Cerrar Panel</button>
+        </header>
+
+        <section class="add-box">
+            <h2>Agregar Nuevo Producto</h2>
+            <div class="field">
+                <label>Nombre del Producto</label>
+                <input type="text" id="p-nombre" placeholder="Ej. Donas">
+            </div>
+            <div class="field">
+                <label>Precio ($)</label>
+                <input type="number" id="p-precio" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="field">
+                <label>Categoría</label>
+                <select id="p-cat">
+                    <option value="cafeteria">☕ Cafetería</option>
+                    <option value="desayunos">🥪 Desayunos</option>
+                    <option value="almuerzos">🍔 Almuerzos</option>
+                    <option value="snacks">🍦 Snacks</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Imagen URL</label>
+                <input type="text" id="p-img" placeholder="nombre-archivo.jpg">
+            </div>
+            <button class="btn-save" onclick="agregarAlMenu()">Guardar Producto</button>
+        </section>
+
+        <div class="product-list" id="admin-list"></div>
+    </div>
+
+    <script>
+        let miMenu = [
+            { id: 1, cat: 'cafeteria', nombre: "Café (Americano/Leche)", precio: 2.50, img: "images/cafe americano-leche.jpg", stock: 20 },
+            { id: 2, cat: 'cafeteria', nombre: "Chocolate Caliente", precio: 2.50, img: "images/chocolate caliente.jpg", stock: 15 },
+            { id: 3, cat: 'cafeteria', nombre: "Jugo Natural", precio: 3.50, img: "images/jugo natural.jpg", stock: 10 },
+            { id: 4, cat: 'cafeteria', nombre: "Refresco (Lata)", precio: 2.00, img: "images/refrescos.jpg", stock: 24 },
+            { id: 5, cat: 'cafeteria', nombre: "Agua Mineral", precio: 1.50, img: "images/agua mineral.jpg", stock: 30 },
+            { id: 6, cat: 'desayunos', nombre: "Empanadas", precio: 2.00, img: "images/empanadas.jpg", stock: 40 },
+            { id: 7, cat: 'desayunos', nombre: "Tequeños (5 unidades)", precio: 4.00, img: "images/tequeños.jpg", stock: 12 },
+            { id: 8, cat: 'desayunos', nombre: "Sandwich Clásico", precio: 4.50, img: "images/sandwich clasico.jpg", stock: 8 },
+            { id: 9, cat: 'desayunos', nombre: "Sandwich Especial", precio: 6.00, img: "images/sandwich especial.jpg", stock: 5 },
+            { id: 10, cat: 'almuerzos', nombre: "Hamburguesa Clásica", precio: 6.00, img: "images/hamburguesa clasica.jpg", stock: 10 },
+            { id: 11, cat: 'almuerzos', nombre: "Perro Gourmet", precio: 5.50, img: "images/perro gourmet.jpg", stock: 15 },
+            { id: 12, cat: 'almuerzos', nombre: "Perro Normal", precio: 3.00, img: "images/perro normal.jpg", stock: 20 },
+            { id: 13, cat: 'almuerzos', nombre: "Salchipapas", precio: 4.00, img: "images/salchipapas.jpg", stock: 12 },
+            { id: 14, cat: 'snacks', nombre: "Helado (Copa/Vaso)", precio: 3.50, img: "images/helado.jpg", stock: 18 },
+            { id: 15, cat: 'snacks', nombre: "Galletas Chips Ahoy", precio: 2.50, img: "images/chips-ahoy.jpg", stock: 20 },
+            { id: 16, cat: 'snacks', nombre: "Chicles / Caramelos", precio: 1.00, img: "images/chicles-caramelos.jpg", stock: 50 },
+            { id: 17, cat: 'snacks', nombre: "Chocolate CriCri", precio: 2.50, img: "images/chocolate cricri.jpg", stock: 15 },
+            { id: 18, cat: 'snacks', nombre: "Cocosette", precio: 2.00, img: "images/cocosette.jpg", stock: 15 }
+        ];
+
+        function renderMenu() {
+            const lista = document.getElementById('admin-list');
+            lista.innerHTML = '';
+
+            miMenu.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+    <img src="${p.img}" class="preview-img" onerror="this.src='https://via.placeholder.com/85?text=Sin+Imagen'">
+    <div class="item-info">
+        <span class="cat-badge">${p.cat}</span>
+        <h3>${p.nombre}</h3>
+        
+        <div class="price-group">
+            <span class="dollar-sign">$</span>
+            <input type="number" class="price-input" min="0" step="0.01" value="${p.precio.toFixed(2)}" onchange="updatePrice(${p.id}, this.value)">
+        </div>
+        
+        <div class="stock-control">
+            <button class="btn-stock" onclick="changeStock(${p.id}, -1)">-</button>
+            <span>Stock: <strong>${p.stock}</strong></span>
+            <button class="btn-stock" onclick="changeStock(${p.id}, 1)">+</button>
+        </div>
+    </div>
+    <button class="btn-del" onclick="deleteItem(${p.id})">🗑️</button>
+`;
+                lista.appendChild(card);
+            });
+        }
+
+        function agregarAlMenu() {
+            const nombre = document.getElementById('p-nombre').value;
+            let precio = parseFloat(document.getElementById('p-precio').value);
+            const cat = document.getElementById('p-cat').value;
+            const imgInput = document.getElementById('p-img').value;
+
+            // Aseguramos que el precio no sea negativo antes de guardar
+            precio = Math.max(0, precio);
+
+            if(!nombre || isNaN(precio)) return alert("Por favor, ingresa nombre y precio válido.");
+
+            const nuevo = {
+                id: Date.now(),
+                cat: cat,
+                nombre: nombre,
+                precio: precio,
+                img: `images/${imgInput || 'default.jpg'}`,
+                stock: 10
+            };
+
+            miMenu.unshift(nuevo);
+            renderMenu();
+            
+            document.getElementById('p-nombre').value = '';
+            document.getElementById('p-precio').value = '';
+            document.getElementById('p-img').value = '';
+        }
+
+        function updatePrice(id, val) {
+            const item = miMenu.find(i => i.id === id);
+            if(item) {
+                // Math.max(0, val) asegura que si escriben -5, se guarde como 0
+                item.precio = Math.max(0, parseFloat(val));
+                renderMenu(); // Refrescamos para aplicar toFixed(2)
+            }
+        }
+
+        function changeStock(id, n) {
+            const item = miMenu.find(i => i.id === id);
+            if(item) {
+                item.stock = Math.max(0, item.stock + n);
+                renderMenu();
+            }
+        }
+
+        let idAEliminar = null; // Guardará el ID temporalmente
+
+function deleteItem(id) {
+    idAEliminar = id; // Guardamos el ID del producto que se tocó
+    const modal = document.getElementById('confirm-modal');
+    modal.style.display = 'flex'; // Mostramos la burbuja
+}
+
+// Configuración de los botones de la burbuja
+document.getElementById('btn-cancel').onclick = function() {
+    document.getElementById('confirm-modal').style.display = 'none';
+    idAEliminar = null;
+};
+
+document.getElementById('btn-confirm').onclick = function() {
+    if (idAEliminar !== null) {
+        // Ejecutamos la eliminación real
+        miMenu = miMenu.filter(i => i.id !== idAEliminar);
+        renderMenu();
+        
+        // Cerramos el modal
+        document.getElementById('confirm-modal').style.display = 'none';
+        idAEliminar = null;
+    }
+};
+
+// Cerrar si hacen clic fuera de la burbuja blanca
+window.onclick = function(event) {
+    const modal = document.getElementById('confirm-modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+        idAEliminar = null;
+    }
+};
+
+        window.onload = renderMenu;
+    </script>
+</body>
+</html>
